@@ -21,7 +21,7 @@ def binary(img_path, filename):
     cv2.imwrite(filename + ".png", img)
     return img
 
-def four_connected(img_path, source_img):
+def four_connected(source_img):
     label_map = np.zeros((len(source_img), len(source_img[0])))
     label = 0
 
@@ -49,6 +49,46 @@ def four_connected(img_path, source_img):
 
     return label_map, color_map, label
 
+def eight_connected(source_img):
+    label_map = np.zeros((len(source_img), len(source_img[0])))
+    label = 0
+
+    color_map = {}
+    hight, width = source_img.shape[:2]
+
+    print("run eight_connected")
+    for i in range(hight):
+        for j in range(width):
+            if source_img[i][j][0] != 255:
+                compare = []
+                left = label_map[i][j-1]
+                left_up = label_map[i-1][j-1]
+                up = label_map[i-1][j]
+                right_up = label_map[i-1][j+1]
+                if left != 0:
+                    compare.append(left)
+                if left_up != 0:
+                    compare.append(left_up)
+                if up != 0:
+                    compare.append(up)
+                if right_up != 0:
+                    compare.append(right_up)
+
+                # no connect
+                if compare == []:
+                    label += 1
+                    label_map[i,j] = label
+                    color_map[label] = label
+                elif len(compare) == 1:
+                    label_map[i,j] = compare[0]
+                else:
+                    current_label = min(compare)
+                    label_map[i,j] = current_label
+                    for block in compare:
+                        color_map[find_by_map(color_map, block)] = find_by_map(color_map, current_label)
+
+    return label_map, color_map, label
+
 def draw_label_map(label_map, color_map, source_img, label_counter, filename):
     print("run draw_label_map, filename: ", filename)
     color = [ (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255)) for i in range(0, label_counter+1) ]
@@ -71,7 +111,13 @@ def find_by_map(color_map, label):
 def n_4():
     for i, img_path in enumerate(img_paths):
         img = binary(img_path,f"g_{i}")
-        label_map, color_map, label_counter = four_connected(img_path, img)
+        label_map, color_map, label_counter = four_connected(img)
         draw_label_map(label_map, color_map, img, label_counter, f"./results/img{i+1}_q1-4.jpg")
 
-n_4()
+def n_8():
+    for i, img_path in enumerate(img_paths):
+        img = binary(img_path,f"g_{i}")
+        label_map, color_map, label_counter = eight_connected(img)
+        draw_label_map(label_map, color_map, img, label_counter, f"./results/img{i+1}_q1-8.jpg")
+# n_4()
+n_8()
