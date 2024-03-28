@@ -111,13 +111,13 @@ def find_by_map(color_map, label):
 
 def n_4():
     for i, img_path in enumerate(img_paths):
-        img = binary(img_path,f"g_{i}")
+        img = binary(img_path,f"./binary/g_{i}")
         label_map, color_map, label_counter = four_connected(img)
         draw_label_map(label_map, color_map, img, label_counter, f"./results/img{i+1}_4.jpg")
 
 def n_8():
     for i, img_path in enumerate(img_paths):
-        img = binary(img_path,f"g_{i}")
+        img = binary(img_path,f"./binary/g_{i}")
         label_map, color_map, label_counter = eight_connected(img)
         draw_label_map(label_map, color_map, img, label_counter, f"./results/img{i+1}_8.jpg")
 

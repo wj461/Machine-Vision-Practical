@@ -1,5 +1,5 @@
 #align(center, text(17pt)[
-  *Machine Vision Homework\#2*
+  *Machine Vision Homework\#2 \u{1F426}*
 ])
 
 #align(center, text(12pt)[
@@ -86,3 +86,4 @@
   image("./results/img3_8.jpg.png",width: 100%),
   image("./results/img4_8.jpg.png",width: 100%),
 )
+
