@@ -64,7 +64,8 @@ def eight_connected(source_img):
                 left = label_map[i][j-1]
                 left_up = label_map[i-1][j-1]
                 up = label_map[i-1][j]
-                right_up = label_map[i-1][j+1]
+                if j < width -1 :
+                    right_up = label_map[i-1][j+1]
                 if left != 0:
                     compare.append(left)
                 if left_up != 0:
