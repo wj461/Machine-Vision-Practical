@@ -61,10 +61,10 @@
   columns: (2fr,2fr,2fr,2fr),
   gutter: 16pt,
   align: (center + horizon, center + horizon, center + horizon),
-  image("./results/img1_q1-4.jpg.png",width: 100%),
-  image("./results/img2_q1-4.jpg.png",width: 100%),
-  image("./results/img3_q1-4.jpg.png",width: 100%),
-  image("./results/img4_q1-4.jpg.png",width: 100%),
+  image("./results/img1_4.jpg.png",width: 100%),
+  image("./results/img2_4.jpg.png",width: 100%),
+  image("./results/img3_4.jpg.png",width: 100%),
+  image("./results/img4_4.jpg.png",width: 100%),
 )
 
 == 8-connect
@@ -81,8 +81,8 @@
   columns: (2fr,2fr,2fr,2fr),
   gutter: 16pt,
   align: (center + horizon, center + horizon, center + horizon),
-  image("./results/img1_q1-8.jpg.png",width: 100%),
-  image("./results/img2_q1-8.jpg.png",width: 100%),
-  image("./results/img3_q1-8.jpg.png",width: 100%),
-  image("./results/img4_q1-8.jpg.png",width: 100%),
+  image("./results/img1_8.jpg.png",width: 100%),
+  image("./results/img2_8.jpg.png",width: 100%),
+  image("./results/img3_8.jpg.png",width: 100%),
+  image("./results/img4_8.jpg.png",width: 100%),
 )
