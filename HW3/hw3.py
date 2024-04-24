@@ -29,7 +29,10 @@ def distance_transform(source_img, distance_map, filename, connect):
         last_distance_map = deepcopy(distance_map)
         for i in range(len(source_img)):
             for j in range(len(source_img[0])):
-                neighbors = add_neighbors_four(distance_map, len(source_img), len(source_img[0]), i, j)
+                if connect == 4:
+                    neighbors = add_neighbors_four(distance_map, len(source_img), len(source_img[0]), i, j)
+                elif connect == 8:
+                    neighbors = add_neighbors_eight(distance_map, len(source_img), len(source_img[0]), i, j)
 
                 if distance_map[i][j] != 0:
                     distance_map[i][j] = min(neighbors) + 1
