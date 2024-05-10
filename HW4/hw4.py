@@ -61,41 +61,55 @@ def label_img(label_color, img_path, raw_img):
         for j in range(width):
             if label_map[i][j] == 0:
                 local_neighbors = []
-                local_neighbors = add_neighbors_four(label_map, hight, width,i,j)
-                local_neighbors = [value for value in local_neighbors if value != 0]
 
+                for x, y in [(0,1), (0,-1), (1,0), (-1,0)]:
+                    if legal(i+y, j+x, width, hight) and label_map[i+y][j+x] != 0 :
+                        local_neighbors.append(label_map[i+y][j+x])
+
+                local_neighbors = set(local_neighbors)
                 if len(local_neighbors) > 0:
                     edge_label_map[i][j] = -2
                     heapq.heappush(neighbors, (cal_priority(label_map, i, j, raw_img), (i, j)))
 
-
     return edge_label_map
-
-def add_neighbors_four(source_map, high, width, i, j):
-    neighbors = []
-    if i > 0 :
-        neighbors.append(source_map[i-1][j])
-    if j > 0:
-        neighbors.append(source_map[i][j-1])
-    if j < width-1:
-        neighbors.append(source_map[i][j+1])
-    if i < high-1:
-        neighbors.append(source_map[i+1][j])
-
-    return neighbors
 
 def cal_priority(label_map, i, j, raw_img):
     r = 4
+    p = 10
+    # p = 700
+    dis = 0
+    t = 0
     local_neighbors = []
+    current = raw_img[i][j]
+    # for y in range(-r//2, r//2+1):
+    #     for x in range(-r//2, r//2+1):
     for y in range(r):
         for x in range(r):
             if legal(i+y, j+x, len(label_map[0]), len(label_map)):
                 local_neighbors.append(raw_img[i+y][j+x])
-
-    t = 0
+                # dis += np.sqrt(((raw_img[i,j] - raw_img[i+y,j+x]) **2).sum())
+                # print(np.sqrt(((raw_img[i,j] - raw_img[i+y,j+x]) **2).sum()), np.sqrt((int(raw_img[i][j][0])-int(raw_img[i+y,j+x][0])) ** 2 + (int(raw_img[i][j][1])-int(raw_img[i+y,j+x][1])) ** 2 + (int(raw_img[i][j][2])-int(raw_img[i+y,j+x][2])) ** 2))
+    # return dis
+    # print(local_neighbor
+    # t = np.sum(np.var(local_neighbors, axis=0))
     for n in local_neighbors:
-        t += (int(raw_img[i][j][0])-int(n[0])) ** 2 + (int(raw_img[i][j][1])-int(n[1])) ** 2 + (int(raw_img[i][j][2])-int(n[2])) ** 2
+        t += np.sqrt((int(raw_img[i][j][0])-int(n[0])) ** 2 + (int(raw_img[i][j][1])-int(n[1])) ** 2 + (int(raw_img[i][j][2])-int(n[2])) ** 2)
+        
+        temp = n.tolist()
+        current_max =  int(max(current.tolist()))
+        temp_max = int(max(temp))
+        if temp.index(temp_max) == current.tolist().index(current_max)\
+            and abs(temp_max - current_max) < 50:
+            t -= p
+        
+        # if np.sum(n) < 100:
+        #     t += p
+
+        # if np.sum(n) > (255 -15):
+        #     t += p
+    # print(dis, t)
     return t
+
     # temp = []
     # for i in range(len(local_neighbors)):
     #     temp.append(np.sum(local_neighbors[i]))
@@ -105,30 +119,7 @@ def cal_priority(label_map, i, j, raw_img):
 
     # return (max_n[0] - min_n[0])**2 + (max_n[1] - min_n[1])**2 + (max_n[2] - min_n[2])**2
 
-
-def add_neighbors_eight(source_map, high, width, i, j):
-    neighbors = []
-    if i > 0 and j > 0:
-        neighbors.append(source_map[i-1][j-1])
-    if i > 0 :
-        neighbors.append(source_map[i-1][j])
-    if i > 0 and j < width-1:
-        neighbors.append(source_map[i-1][j+1])
-    if j > 0:
-        neighbors.append(source_map[i][j-1])
-    if j < width-1:
-        neighbors.append(source_map[i][j+1])
-    if i < high-1 and j > 0:
-        neighbors.append(source_map[i+1][j-1])
-    if i < high-1:
-        neighbors.append(source_map[i+1][j])
-    if i < high-1 and j < width-1:
-        neighbors.append(source_map[i+1][j+1])
-
-    return neighbors
-
-
-def push_neighbors(label_map, raw_img):
+def push_neighbors(label_map, raw_img, color, img_path):
     hight, width = len(label_map), len(label_map[0])
 
     count = 0
@@ -140,8 +131,10 @@ def push_neighbors(label_map, raw_img):
             break
 
         local_neighbors = []
-        local_neighbors = add_neighbors_four(label_map, hight, width,i,j)
-        local_neighbors = [value for value in local_neighbors if value > 0]
+
+        for x, y in [(0,1), (0,-1), (1,0), (-1,0)]:
+            if legal(i+y, j+x, width, hight) and label_map[i+y][j+x] > 0 :
+                local_neighbors.append(label_map[i+y][j+x])
 
         local_neighbors = set(local_neighbors)
         if len(local_neighbors) == 1:# push new edge pixel to queue when -2 mark to label
@@ -154,9 +147,9 @@ def push_neighbors(label_map, raw_img):
         if len(local_neighbors) > 1: # mark edge pixel
             label_map[i][j] = -1
 
-        # if count % 1000 == 0:
-        #     draw_img("./images/img1.png",label_map, f"./test/img{count}", label_color[0])
-        count += 1
+        # if count % 500 == 0:
+        #     draw_img(img_path,label_map, f"./test/img{count}", color)
+        # count += 1
 
     return label_map
 
@@ -186,7 +179,7 @@ def q1():
         print(f"run init label {img_path}")
         label_map = label_img(label_color[i], img_path, raw_img_g[i])
         print(f"run push {img_path}")
-        label_map = push_neighbors(label_map, raw_img_g[i])
+        label_map = push_neighbors(label_map, raw_img_g[i],label_color[i], img_path)
         print(f"run draw {img_path}")
         draw_img(img_path,label_map, f"./result/img{i+1}", label_color[i])
         print(f"done {img_path}")
