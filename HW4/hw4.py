@@ -3,6 +3,7 @@ import numpy as np
 import heapq
 
 img_paths = ["./images/img1.png", "./images/img2.png", "./images/img3.png"]
+origin_img_paths = ["./images/img1.jpg", "./images/img2.jpg", "./images/img3.jpg"]
 # img_paths = ["./images/test.png"]
 # BGR
 
@@ -25,7 +26,7 @@ label_color = [[
     [0, 255, 255],
     [220, 255, 235],
     [157, 255, 0],
-    [128, 128, 128],
+    [166, 166, 200],
     ],
     [[0, 0, 255], 
     [0, 255, 0],
@@ -75,23 +76,15 @@ def label_img(label_color, img_path, raw_img):
 
 def cal_priority(label_map, i, j, raw_img):
     r = 4
-    p = 10
-    # p = 700
-    dis = 0
-    t = 0
+    p = 20
     local_neighbors = []
     current = raw_img[i][j]
-    # for y in range(-r//2, r//2+1):
-    #     for x in range(-r//2, r//2+1):
     for y in range(r):
         for x in range(r):
             if legal(i+y, j+x, len(label_map[0]), len(label_map)):
                 local_neighbors.append(raw_img[i+y][j+x])
-                # dis += np.sqrt(((raw_img[i,j] - raw_img[i+y,j+x]) **2).sum())
-                # print(np.sqrt(((raw_img[i,j] - raw_img[i+y,j+x]) **2).sum()), np.sqrt((int(raw_img[i][j][0])-int(raw_img[i+y,j+x][0])) ** 2 + (int(raw_img[i][j][1])-int(raw_img[i+y,j+x][1])) ** 2 + (int(raw_img[i][j][2])-int(raw_img[i+y,j+x][2])) ** 2))
-    # return dis
-    # print(local_neighbor
-    # t = np.sum(np.var(local_neighbors, axis=0))
+
+    t = 0
     for n in local_neighbors:
         t += np.sqrt((int(raw_img[i][j][0])-int(n[0])) ** 2 + (int(raw_img[i][j][1])-int(n[1])) ** 2 + (int(raw_img[i][j][2])-int(n[2])) ** 2)
         
@@ -101,34 +94,18 @@ def cal_priority(label_map, i, j, raw_img):
         if temp.index(temp_max) == current.tolist().index(current_max)\
             and abs(temp_max - current_max) < 50:
             t -= p
-        
-        # if np.sum(n) < 100:
-        #     t += p
+        if temp.index(temp_max) != current.tolist().index(current_max)\
+            and abs(temp[temp.index(temp_max)] - current[temp.index(temp_max)]) > 50:
+            t += p*2
 
-        # if np.sum(n) > (255 -15):
-        #     t += p
-    # print(dis, t)
     return t
 
-    # temp = []
-    # for i in range(len(local_neighbors)):
-    #     temp.append(np.sum(local_neighbors[i]))
-    
-    # min_n = local_neighbors[temp.index(min(temp))].astype('float32')
-    # max_n = local_neighbors[temp.index(max(temp))].astype('float32')
 
-    # return (max_n[0] - min_n[0])**2 + (max_n[1] - min_n[1])**2 + (max_n[2] - min_n[2])**2
-
-def push_neighbors(label_map, raw_img, color, img_path):
+def push_neighbors(label_map, raw_img):
     hight, width = len(label_map), len(label_map[0])
 
-    count = 0
-    while(True):
-        try:
-            _, (i,j) = heapq.heappop(neighbors)
-        except Exception as e:
-            print("error", e)
-            break
+    while(len(neighbors) > 0):
+        _, (i,j) = heapq.heappop(neighbors)
 
         local_neighbors = []
 
@@ -147,9 +124,6 @@ def push_neighbors(label_map, raw_img, color, img_path):
         if len(local_neighbors) > 1: # mark edge pixel
             label_map[i][j] = -1
 
-        # if count % 500 == 0:
-        #     draw_img(img_path,label_map, f"./test/img{count}", color)
-        # count += 1
 
     return label_map
 
@@ -169,19 +143,22 @@ def draw_img(img_path,label_map, filename, color_map):
 
     img = img.astype('float32')
     new_img = new_img.astype('float32')
+    output = np.zeros((hight, width, 3))
 
-    output = cv2.addWeighted(img, 0.5, new_img, 0.3, 50)
+    for i in range(hight):
+        for j in range(width):
+            output[i][j] = img[i][j] * 0.5 + new_img[i][j] * 0.5
+
     cv2.imwrite(filename + ".png", output) 
-    # cv2.imwrite(filename + ".png", new_img) 
 
 def q1():
     for i, img_path in enumerate(img_paths):
         print(f"run init label {img_path}")
         label_map = label_img(label_color[i], img_path, raw_img_g[i])
         print(f"run push {img_path}")
-        label_map = push_neighbors(label_map, raw_img_g[i],label_color[i], img_path)
+        label_map = push_neighbors(label_map, raw_img_g[i])
         print(f"run draw {img_path}")
-        draw_img(img_path,label_map, f"./result/img{i+1}", label_color[i])
+        draw_img(origin_img_paths[i],label_map, f"./result/img{i+1}", label_color[i])
         print(f"done {img_path}")
 
 q1()
