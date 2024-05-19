@@ -16,7 +16,7 @@ def mean_filter(img_path, kernel_size, filename):
     new_img = np.zeros((height, width, 3))
     for i in range(height):
         for j in range(width):
-            local = np.zeros((kernel_size, kernel_size, 1))
+            local = np.zeros((kernel_size, kernel_size))
             for x in range(-(kernel_size//2), (kernel_size//2)+1):
                 for y in range(-(kernel_size//2), (kernel_size//2)+1):
                     if legal(i+x, j+y, width, height):
@@ -36,13 +36,13 @@ def median_filter(img_path, kernel_size, filename):
     new_img = np.zeros((height, width, 3))
     for i in range(height):
         for j in range(width):
-            local = np.zeros((kernel_size, kernel_size, 1))
+            local = np.zeros((kernel_size, kernel_size))
             for x in range(-(kernel_size//2), (kernel_size//2)+1):
                 for y in range(-(kernel_size//2), (kernel_size//2)+1):
                     if legal(i+x, j+y, width, height):
                         local[x+(kernel_size//2)][y+(kernel_size//2)] = img[i+x][j+y][0]
                 
-            local = np.sort(local).flatten()
+            local = np.sort(local.flatten())
             new_img[i][j] = local[(kernel_size*kernel_size)//2]
 
     cv2.imwrite(filename + ".png", new_img) 
@@ -108,11 +108,11 @@ def q1():
     for i, img_path in enumerate(img_paths):
         # mean_filter(img_path, 3, f'./result/img{i+1}_q1_3')
         # mean_filter(img_path, 7, f'./result/img{i+1}_q1_7')
-        # median_filter(img_path, 3, f'./result/img{i+1}_q2_3')
-        # median_filter(img_path, 7, f'./result/img{i+1}_q2_7')
+        median_filter(img_path, 3, f'./result/img{i+1}_q2_3')
+        median_filter(img_path, 7, f'./result/img{i+1}_q2_7')
         # gaussian_filter(img_path, 5, f'./result/img{i+1}_q3')
-        gaussian_med_filter(img_path, 7, f'./result/img{i+1}_q4_7')
-        gaussian_med_filter(img_path, 3, f'./result/img{i+1}_q4_3')
+        # gaussian_med_filter(img_path, 7, f'./result/img{i+1}_q4_7')
+        # gaussian_med_filter(img_path, 3, f'./result/img{i+1}_q4_3')
         
 
 
