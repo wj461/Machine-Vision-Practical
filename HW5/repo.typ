@@ -59,7 +59,7 @@
   image("./result/img2_q2_7.png",width: 100%),
   image("./result/img3_q2_7.png",width: 100%),
 )
-#pagebreak()
+
 = 3. Implement Gaussian 2D Filter with 5*5 mask.
 $sigma = 1, $, kernel size = 5x5
 - 透過gaussian(kernel_size=5)來生成gaussian kernel並進行正規化
@@ -108,6 +108,18 @@ Merge Gaussian and Median Filter
 
 = Compare
 - Mean Filter
-整體而言把圖片變得模糊，且對於邊緣的部分會有模糊的效果
+把圖片整體變得模糊
 kernel size越大，模糊的效果越明顯
+對於消除顆粒狀的noise效果不如Median Filter
+
 - Median Filter
+對於顆粒狀的noise有很好的效果，但對於邊緣的部分會有模糊的效果
+較於突出的部份會被消除
+kernel size越大，模糊的效果越明顯
+
+- Gaussian Filter
+比起Mean Filter，Gaussian Filter對於圖片的平滑效果更好
+但兩邊對於消除顆粒狀的noise效果不如Median Filter
+
+- Gaussian + Median Filter
+寄成了Median Filter對於顆粒狀的noise有很好的效果，也透過Gaussian Filter將圖片做了平滑。
